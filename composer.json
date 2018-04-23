@@ -1,0 +1,29 @@
+{
+	"name" : "kabachello/fileroute",
+	"description" : "A PSR-16 compilant HTTP middleware to serve text markup from files",
+	"type" : "library",
+	"license" : "MIT",
+	"authors" : [{
+			"name" : "Andrej Kabachnik",
+			"email" : "kabachnik@gmail.com",
+			"role" : "Creator"
+		}
+	],
+	"support" : {
+		"issues" : "https://github.com/kabachello/ComposerAPI/issues"
+	},
+	"require" : {
+		"symfony/finder" : "^4.0",
+		"psr/http-message": "^1.0.1",
+        "psr/http-server-handler": "^1.0",
+        "psr/http-server-middleware": "^1.0",
+        "psr/log": "^1.0",
+        "guzzlehttp/psr7": "^1.4.2"
+    },
+	"suggest" : {
+		"cebe/markdown" : "^1.2.1"
+	},
+    "autoload": {
+        "psr-4": { "kabachello\\FileRoute\\": "" }
+    }
+}

@@ -10,6 +10,8 @@ class PlaceholderFileTemplate implements TemplateInterface
     
     private $baseUrl = null;
     
+    private $breadcrumbNameGenerator = null;
+    
     public function __construct(string $pathToTemplate, string $baseUrl)
     {
         $this->pathToTemplate = $pathToTemplate;
@@ -113,16 +115,31 @@ class PlaceholderFileTemplate implements TemplateInterface
         $html = '';
         $crumbs = explode('/', $urlPath);
         $crumbPath = '';
-        $crumbTitle = 'Documentation';
         foreach ($crumbs as $nr => $crumb) {
+            $crumbTitle = call_user_func($this->breadcrumbNameGenerator, $crumbPath, $crumb);
             if ($nr === 1 || $nr === 2) {
                 $html .= ($html ? ' > ' : '') . $crumbTitle;
             } else {
                 $html .= ($html ? ' > ' : '') . '<a href="' . $baseUrl . $crumbPath . '/index.md">' . $crumbTitle . '</a>';
             }
             $crumbPath .= '/' . $crumb;
-            $crumbTitle = ucfirst(str_replace('_', ' ', $crumb));
         }
         return $html;
+    }
+    
+    protected function getBreadcrumbNameGenerator()
+    {
+        if ($this->breadcrumbNameGenerator === null) {
+            $this->breadcrumbNameGenerator = function (string $path, string $crumb) {
+                return ucfirst(str_replace('_', ' ', $crumb));
+            };
+        }
+        return $this->breadcrumbNameGenerator;
+    }
+    
+    public function setBreadcrumbNameGenerator(callable $function)
+    {
+        $this->breadcrumbNameGenerator = $function;
+        return $this;
     }
 }

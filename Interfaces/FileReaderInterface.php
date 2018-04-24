@@ -3,5 +3,5 @@ namespace kabachello\FileRoute\Interfaces;
 
 interface FileReaderInterface
 {
-    public function readFile(string $path) : ContentInterface;
+    public function readFile(string $filePath, string $urlPath) : ContentInterface;
 }

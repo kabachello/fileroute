@@ -2,7 +2,6 @@
 <buildpath>
 	<buildpathentry kind="src" path=""/>
 	<buildpathentry kind="con" path="org.eclipse.php.core.LANGUAGE"/>
-	<buildpathentry external="true" kind="lib" path="C:/wamp/www/exface/exface/vendor/symfony/finder"/>
 	<buildpathentry external="true" kind="lib" path="C:/wamp/www/exface/exface/vendor/cebe/markdown"/>
 	<buildpathentry external="true" kind="lib" path="C:/wamp/www/exface/exface/vendor/psr/http-message/src"/>
 	<buildpathentry external="true" kind="lib" path="C:/wamp/www/exface/exface/vendor/psr/http-server-handler/src/"/>

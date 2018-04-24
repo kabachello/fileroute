@@ -16,11 +16,14 @@ class MarkdownFile implements ContentInterface
     
     private $folder = null;
     
-    public function __construct(string $path, FolderStructureInterface $folder)
+    private $urlPath = null;
+    
+    public function __construct(string $filePath, string $urlPath, FolderStructureInterface $folder)
     {
-        $this->fileInfo = new \SplFileInfo($path);
-        $this->contentRaw = file_get_contents($path);
+        $this->fileInfo = new \SplFileInfo($filePath);
+        $this->contentRaw = file_get_contents($filePath);
         $this->folder = $folder;
+        $this->urlPath = $urlPath;
     }
     
     protected function getContentRaw(): string
@@ -69,5 +72,10 @@ class MarkdownFile implements ContentInterface
     public function getFolder() : FolderStructureInterface
     {
         return $this->folder;
+    }
+    
+    public function getUrlPath() : string
+    {
+        return $this->urlPath;
     }
 }

@@ -15,12 +15,17 @@ class MarkdownReader implements FileReaderInterface
         if (! file_exists($filePath)) {
             throw new PageNotFoundException('Page "' . $urlPath . '" not found at "' . $filePath . '"!');
         }
-        $folder = $this->readFolder(pathinfo($filePath, PATHINFO_DIRNAME));
+        $fileFolder = pathinfo($filePath, PATHINFO_DIRNAME);
+        $urlFolder = pathinfo($urlPath, PATHINFO_DIRNAME);
+        if ($urlFolder === '.') {
+            $urlFolder = '';
+        }
+        $folder = $this->readFolder($fileFolder, $urlFolder);
         return new MarkdownFile($filePath, $urlPath, $folder);
     }
     
-    protected function readFolder(string $path) : FolderStructureInterface
+    public function readFolder(string $filePath, string $urlPath) : FolderStructureInterface
     {
-        return new PlainFolderStructure($path, $this, 'index.md', '*.md');
+        return new PlainFolderStructure($filePath, $urlPath, $this, 'index.md', '*.md');
     }
 }

@@ -3,6 +3,7 @@ namespace kabachello\FileRoute\Templates;
 
 use kabachello\FileRoute\Interfaces\ContentInterface;
 use kabachello\FileRoute\Interfaces\TemplateInterface;
+use kabachello\FileRoute\Interfaces\FolderStructureInterface;
 
 class PlaceholderFileTemplate implements TemplateInterface
 {
@@ -10,7 +11,7 @@ class PlaceholderFileTemplate implements TemplateInterface
     
     private $baseUrl = null;
     
-    private $breadcrumbNameGenerator = null;
+    private $breadcrumbsRootName = 'Home';
     
     public function __construct(string $pathToTemplate, string $baseUrl)
     {
@@ -33,12 +34,12 @@ class PlaceholderFileTemplate implements TemplateInterface
             'subtitle' => $content->getSubtitle(),
             'content' => $content->getContent(),
             'baseurl' => $this->baseUrl,
-            'breadcrumbs' => $this->buildHtmlBreadcrumbs($this->baseUrl, $content->getUrlPath())
+            'breadcrumbs' => $this->buildHtmlBreadcrumbs($this->baseUrl, $content)
         ];
         
         $html = $this::replacePlaceholders($tpl, $phs);
         $urlPath = $content->getUrlPath();
-        $urlFolder = pathinfo($urlPath, PATHINFO_DIRNAME);
+        $urlFolder = $content->getFolder()->getUrlPath();
         $html = $this->rebaseRelativeLinks($html, $this->baseUrl . '/' . $urlFolder);
         
         return $html;
@@ -107,39 +108,48 @@ class PlaceholderFileTemplate implements TemplateInterface
         return $html;
     }
     
-    protected function buildHtmlBreadcrumbs($baseUrl, $urlPath) : string
+    protected function buildHtmlBreadcrumbs(string $baseUrl, ContentInterface $content) : string
     {
+        $baseUrl = rtrim($baseUrl, "/") . '/';
+        $urlPath = $content->getFolder()->getUrlPath();
         if ($urlPath === '' || $urlPath === '/') {
             return '';
         }
         $html = '';
         $crumbs = explode('/', $urlPath);
+        array_unshift($crumbs, '');
+        $crumbsCount = count($crumbs);
+        $folders = [];
+        $folder = $content->getFolder();
+        for ($i=0; $i<$crumbsCount; $i++) {
+            $folders[($crumbsCount-$i-1)] = $folder;
+            $folder = $folder->getParent();
+        }
         $crumbPath = '';
         foreach ($crumbs as $nr => $crumb) {
-            $crumbTitle = call_user_func($this->breadcrumbNameGenerator, $crumbPath, $crumb);
-            if ($nr === 1 || $nr === 2) {
+            $crumbFolder = $folders[$nr];
+            $crumbTitle = $crumbFolder->isUrlRoot() ? $this->getBreadcrumbsRootName() : $crumbFolder->getName();
+            if ($content->getUrlPath() === $crumbFolder->getIndexUrlPath()) {
+                continue;
+            }
+            if ($crumbPath !== '' && ! $crumbFolder->hasIndex()) {
                 $html .= ($html ? ' > ' : '') . $crumbTitle;
             } else {
-                $html .= ($html ? ' > ' : '') . '<a href="' . $baseUrl . $crumbPath . '/index.md">' . $crumbTitle . '</a>';
+                $html .= ($html ? ' > ' : '') . '<a href="' . $baseUrl . $crumbFolder->getIndexUrlPath() . '">' . $crumbTitle . '</a>';
             }
             $crumbPath .= '/' . $crumb;
         }
         return $html;
     }
     
-    protected function getBreadcrumbNameGenerator()
+    public function setBreadcrumbsRootName(string $name) : TemplateInterface
     {
-        if ($this->breadcrumbNameGenerator === null) {
-            $this->breadcrumbNameGenerator = function (string $path, string $crumb) {
-                return ucfirst(str_replace('_', ' ', $crumb));
-            };
-        }
-        return $this->breadcrumbNameGenerator;
+        $this->breadcrumbsRootName = $name;
+        return $this;
     }
     
-    public function setBreadcrumbNameGenerator(callable $function)
+    public function getBreadcrumbsRootName() : string
     {
-        $this->breadcrumbNameGenerator = $function;
-        return $this;
+        return $this->breadcrumbsRootName;
     }
 }

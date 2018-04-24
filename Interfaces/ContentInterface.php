@@ -14,4 +14,6 @@ interface ContentInterface
     public function getDateTimeCreated() : \DateTime;
     
     public function getDateTimeUpdated() : \DateTime;
+    
+    public function getUrlPath() : string;
 }

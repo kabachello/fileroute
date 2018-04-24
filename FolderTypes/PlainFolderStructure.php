@@ -9,6 +9,8 @@ class PlainFolderStructure implements FolderStructureInterface
 {
     private $path = null;
     
+    private $url = null;
+    
     private $reader = null;
     
     private $indexFileName = null;
@@ -17,12 +19,13 @@ class PlainFolderStructure implements FolderStructureInterface
     
     private $fileMask = null;
     
-    public function __construct(string $path, FileReaderInterface $fileReader, $indexFileName, $fileMask = '*')
+    public function __construct(string $filePath, string $urlPath, FileReaderInterface $fileReader, $indexFileName, $fileMask = '*')
     {
-        if (! is_dir($path)) {
-            throw new \UnexpectedValueException('Cannot read folder structure: "' . $path . '" is not a valid folder!');
+        if (! is_dir($filePath)) {
+            throw new \UnexpectedValueException('Cannot read folder structure: "' . $filePath . '" is not a valid folder!');
         }
-        $this->path = $path;
+        $this->path = $filePath;
+        $this->url = $urlPath;
         $this->reader = $fileReader;
         $this->indexFileName = $indexFileName;
         $this->fileMask = $fileMask;
@@ -50,13 +53,56 @@ class PlainFolderStructure implements FolderStructureInterface
 
     public function getIndex(): ContentInterface
     {
-        $this->reader->readFile($this->indexFileName);
+        return $this->reader->readFile($this->getIndexFilePath());
+    }
+    
+    public function hasIndex() : bool
+    {
+        return file_exists($this->getIndexFilePath());
+    }
+        
+    public function getIndexFilePath()
+    {
+        return $this->path . DIRECTORY_SEPARATOR . $this->indexFileName;
+    }
+    
+    /**
+     * 
+     * {@inheritDoc}
+     * @see \kabachello\FileRoute\Interfaces\FolderStructureInterface::getIndexUrlPath()
+     */
+    public function getIndexUrlPath()
+    {
+        return ($this->url !== '' ? $this->url . '/' : '') . $this->indexFileName;
     }
     
     public function getParent(): FolderStructureInterface
     {
-        return $this->readFolder(pathinfo($this->path, PATHINFO_DIRNAME));
+        $fileFolder = pathinfo($this->path, PATHINFO_DIRNAME);
+        $urlFolder = pathinfo($this->url, PATHINFO_DIRNAME);
+        if ($urlFolder === '.') {
+            $urlFolder = '';
+        }
+        return $this->reader->readFolder($fileFolder, $urlFolder);
+    }
+    
+    public function getFilePath() : string
+    {
+        return $this->path;
+    }
+    
+    public function getUrlPath() : string
+    {
+        return $this->url;
     }
 
+    public function getName() : string
+    {
+        return ucfirst(str_replace('_', ' ', pathinfo($this->url, PATHINFO_BASENAME)));
+    }
     
+    public function isUrlRoot() : bool
+    {
+        return $this->url === '';
+    }
 }

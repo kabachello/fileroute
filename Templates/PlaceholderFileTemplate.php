@@ -121,7 +121,7 @@ class PlaceholderFileTemplate implements TemplateInterface
                 $html .= ($html ? ' > ' : '') . '<a href="' . $baseUrl . $crumbPath . '/index.md">' . $crumbTitle . '</a>';
             }
             $crumbPath .= '/' . $crumb;
-            $crumbTitle = $crumb;
+            $crumbTitle = ucfirst(str_replace('_', ' ', $crumb));
         }
         return $html;
     }

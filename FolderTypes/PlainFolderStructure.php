@@ -98,7 +98,7 @@ class PlainFolderStructure implements FolderStructureInterface
 
     public function getName() : string
     {
-        return ucfirst(str_replace('_', ' ', pathinfo($this->url, PATHINFO_BASENAME)));
+        return ucfirst(str_replace('_', ' ', basename($this->url)));
     }
     
     public function isUrlRoot() : bool

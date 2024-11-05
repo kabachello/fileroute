@@ -13,12 +13,12 @@
 		"issues" : "https://github.com/kabachello/ComposerAPI/issues"
 	},
 	"require" : {
-		"symfony/finder" : "^4.0||^5.0",
-		"psr/http-message" : "^1.0.1",
+		"symfony/finder" : "^4||^5",
+		"psr/http-message" : "^1||^2",
 		"psr/http-server-handler" : "^1.0",
 		"psr/http-server-middleware" : "^1.0",
 		"psr/log" : "^1.0",
-		"guzzlehttp/psr7" : "^1.4.2"
+		"guzzlehttp/psr7" : "^1||^2||^3"
 	},
 	"suggest" : {
 		"cebe/markdown" : "^1.2.1"
